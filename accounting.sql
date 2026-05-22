@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2026-05-22 05:43:28
+-- 產生時間： 2026-05-22 06:51:59
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -104,13 +104,15 @@ ALTER TABLE `accounts`
 -- 資料表索引 `attachments`
 --
 ALTER TABLE `attachments`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_attachments_transaction` (`transaction_id`);
 
 --
 -- 資料表索引 `categories`
 --
 ALTER TABLE `categories`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_categories_account` (`account_id`);
 
 --
 -- 資料表索引 `transactions`
@@ -122,7 +124,9 @@ ALTER TABLE `transactions`
 -- 資料表索引 `transaction_lines`
 --
 ALTER TABLE `transaction_lines`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_lines_transaction` (`transaction_id`),
+  ADD KEY `fk_lines_account` (`account_id`);
 
 --
 -- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
@@ -157,6 +161,29 @@ ALTER TABLE `transactions`
 --
 ALTER TABLE `transaction_lines`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+
+--
+-- 已傾印資料表的限制式
+--
+
+--
+-- 資料表的限制式 `attachments`
+--
+ALTER TABLE `attachments`
+  ADD CONSTRAINT `fk_attachments_transaction` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE;
+
+--
+-- 資料表的限制式 `categories`
+--
+ALTER TABLE `categories`
+  ADD CONSTRAINT `fk_categories_account` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE;
+
+--
+-- 資料表的限制式 `transaction_lines`
+--
+ALTER TABLE `transaction_lines`
+  ADD CONSTRAINT `fk_lines_account` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`),
+  ADD CONSTRAINT `fk_lines_transaction` FOREIGN KEY (`transaction_id`) REFERENCES `transactions` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
